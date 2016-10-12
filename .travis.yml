@@ -1,0 +1,29 @@
+language: python
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+dist: trusty
+
+before_install:
+  - sudo apt-get update
+  - git clone --recursive https://github.com/strozfriedberg/liblightgrep.git
+  - cd liblightgrep/
+  - sudo apt-get install -y autoconf libtool pkg-config build-essential bison libicu-dev libboost-dev libboost-program-options-dev libboost-system-dev
+  - autoreconf -fi
+  - ./configure --with-boost-libdir=/usr/lib/x86_64-linux-gnu
+  - make -j4
+  - sudo make install
+  - export LD_LIBRARY_PATH=/usr/local/lib
+  - cd ..
+  - mv liblightgrep /usr/local/src/
+  - sudo apt-get install -y python3-pip
+  - ln -s ./ /usr/local/src/libredact
+  - cd /usr/local/src/libredact
+  - sudo python3 -m pip install --upgrade pip
+  - sudo python3 -m pip install docopt
+  - sudo python3 -m pip install -e .
+install:
+
+script: $CXX --version && autoreconf -fi && ./configure --with-boost-libdir=/usr/lib/x86_64-linux-gnu && make -j4 && sudo make install
